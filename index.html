@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>부모님과 부산 2박 3일</title>
+<meta name="description" content="2026년 8월 22일부터 24일까지, 부모님을 모시고 광안리 숙소를 기점으로 도는 부산 여행 일정.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+:root{
+  --sea:#0B2A45; --sea-deep:#061B2D; --tide:#12A5B8;
+  --sand:#F6EBD6; --sun:#FFC61E; --coral:#FF6A52;
+  --line1:#F06A00; --line2:#7CB342;
+  --ink:#12222F; --muted:#5E7386;
+  --mono:'IBM Plex Mono',ui-monospace,monospace;
+  --sans:'Pretendard','Pretendard Variable',-apple-system,BlinkMacSystemFont,system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--sand);color:var(--ink);font-family:var(--sans);line-height:1.65;-webkit-font-smoothing:antialiased}
+.wrap{max-width:780px;margin:0 auto;padding:0 22px 96px}
+
+.hero{background:radial-gradient(120% 90% at 12% 0%, rgba(18,165,184,.45) 0%, transparent 55%),linear-gradient(180deg,var(--sea-deep) 0%, var(--sea) 68%, #0E3556 100%);color:#EAF4FB;padding:56px 0 0;overflow:hidden}
+.hero .wrap{padding-bottom:0}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--sun);margin:0 0 18px}
+.hero h1{font-size:clamp(38px,10vw,68px);line-height:1.02;letter-spacing:-.035em;font-weight:800;margin:0 0 20px}
+.hero h1 em{font-style:normal;color:var(--sun)}
+.hero p.lede{font-size:16px;color:#A9C6DA;max-width:36em;margin:0 0 32px}
+.meta{display:flex;flex-wrap:wrap;gap:10px;padding-bottom:44px}
+.chip{font-family:var(--mono);font-size:12px;border:1px solid rgba(234,244,251,.28);border-radius:999px;padding:7px 14px;color:#CFE3F1}
+.chip.hot{background:var(--sun);border-color:var(--sun);color:#3A2A00;font-weight:600}
+.horizon{height:3px;background:linear-gradient(90deg,var(--sun) 0 22%,var(--coral) 22% 46%,var(--tide) 46% 100%)}
+
+section{padding:52px 0 8px}
+h2{font-size:13px;font-family:var(--mono);letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin:0 0 6px;font-weight:600}
+h2 + .sub{margin:0 0 26px;font-size:22px;font-weight:700;letter-spacing:-.02em}
+
+.board{border-top:2px solid var(--ink)}
+.alarm{display:grid;grid-template-columns:88px 1fr;gap:16px;padding:16px 2px;border-bottom:1px solid rgba(18,34,47,.14)}
+.alarm time{font-family:var(--mono);font-size:13px;font-weight:600;color:var(--coral);padding-top:2px}
+.alarm strong{display:block;font-size:16px;font-weight:700}
+.alarm span{display:block;font-size:14px;color:var(--muted)}
+
+.checklist{list-style:none;margin:0 0 14px;padding:0;display:flex;flex-direction:column;gap:8px}
+.check{display:flex;align-items:flex-start;gap:12px;appearance:none;width:100%;border:1.5px solid rgba(18,34,47,.16);background:#fff;border-radius:10px;padding:12px 14px;cursor:pointer;text-align:left;font-family:var(--sans)}
+.check .box{flex:0 0 20px;width:20px;height:20px;border-radius:5px;border:2px solid var(--muted);margin-top:1px;display:flex;align-items:center;justify-content:center;font-size:13px;color:transparent}
+.check[aria-pressed="true"]{background:rgba(18,165,184,.08);border-color:var(--tide)}
+.check[aria-pressed="true"] .box{background:var(--tide);border-color:var(--tide);color:#fff}
+.check .label{font-size:14.5px;color:var(--ink)}
+.check[aria-pressed="true"] .label{color:var(--muted);text-decoration:line-through}
+.check:focus-visible{outline:3px solid var(--tide);outline-offset:2px}
+.tally{font-family:var(--mono);font-size:13px;color:var(--muted);margin:0}
+
+.day{margin-top:44px}
+.dayhead{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+.dayhead .d{font-family:var(--mono);font-size:12px;letter-spacing:.16em;color:#fff;background:var(--sea);padding:4px 9px;border-radius:5px}
+.dayhead h3{font-size:23px;margin:0;letter-spacing:-.025em}
+.dayhead .dt{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.daynote{font-size:14px;color:var(--muted);margin:0 0 18px}
+
+.mapbox{height:300px;border-radius:14px;overflow:hidden;border:2px solid rgba(18,34,47,.14);margin-bottom:8px;background:#DFE9EC}
+.maphint{font-family:var(--mono);font-size:11px;color:var(--muted);margin:0 0 22px;letter-spacing:.03em}
+
+.route{list-style:none;margin:0;padding:0 0 0 30px;position:relative}
+.route::before{content:"";position:absolute;left:7px;top:12px;bottom:22px;width:3px;background:rgba(18,34,47,.16);border-radius:2px}
+.stop{position:relative;padding:0 0 26px}
+.stop::before{content:"";position:absolute;left:-30px;top:8px;width:17px;height:17px;border-radius:50%;background:var(--sand);border:3px solid var(--muted);box-sizing:border-box;transition:transform .2s ease}
+.stop.l1::before{border-color:var(--line1)}
+.stop.l2::before{border-color:var(--line2)}
+.stop.star::before{background:var(--sun);border-color:#D9A200}
+.stop.active::before{transform:scale(1.35)}
+.stop.active{background:rgba(18,165,184,.09);border-radius:10px;box-shadow:0 0 0 10px rgba(18,165,184,.09)}
+.stop .t{font-family:var(--mono);font-size:12px;color:var(--coral);font-weight:600}
+.stop h4{margin:2px 0 4px;font-size:17px;letter-spacing:-.015em}
+.pin{appearance:none;background:none;border:0;padding:0;font:inherit;color:inherit;cursor:pointer;text-align:left;border-bottom:1.5px solid rgba(18,165,184,.55)}
+.pin:hover,.pin:focus-visible{color:#0A7C8B;border-bottom-color:#0A7C8B}
+.stop p{margin:0;font-size:14.5px;color:#3F5563}
+.ext{display:inline-block;margin-top:5px;font-family:var(--mono);font-size:11px;color:var(--muted);text-decoration:none;border-bottom:1px dotted var(--muted)}
+.ext:hover{color:var(--ink)}
+.tag{display:inline-block;font-family:var(--mono);font-size:10px;letter-spacing:.1em;padding:2px 7px;border-radius:4px;margin-left:6px;vertical-align:2px}
+.tag.ev{background:var(--sun);color:#5C4600;font-weight:600}
+.tag.res{background:var(--coral);color:#fff;font-weight:600}
+
+.pinmark{display:flex;align-items:center;justify-content:center;border-radius:50%;color:#fff;font-family:var(--mono);font-size:12px;font-weight:600;border:2px solid #fff;box-shadow:0 1px 5px rgba(0,0,0,.35)}
+.leaflet-container{font-family:var(--sans)}
+
+.tips{margin-top:48px;background:var(--sea);color:#DCEBF6;border-radius:16px;padding:26px 24px}
+.tips h3{margin:0 0 14px;font-size:17px;color:#fff}
+.tips ul{margin:0;padding-left:18px}
+.tips li{margin-bottom:9px;font-size:14.5px}
+.tips li::marker{color:var(--sun)}
+.tips + .tips{margin-top:20px}
+footer{margin-top:34px;font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.06em}
+
+@media (max-width:520px){
+  .alarm{grid-template-columns:72px 1fr;gap:12px}
+  .hero{padding-top:40px}
+  .mapbox{height:250px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <p class="eyebrow">Busan · 2박 3일 · 부모님 동반</p>
+    <h1>부모님과<br>부산 <em>느긋느긋</em><br>바닷가 나들이</h1>
+    <p class="lede">8월 22일 토요일부터 24일 월요일까지. 광안리 숙소를 2박 그대로 잡아 짐 이동 없이, 오전엔 야외 → 한낮엔 냉방 실내 → 저녁엔 야외·야경 순서로 돕니다. 계단·경사가 있는 곳은 빼고, 이동은 택시를 기본으로 합니다.</p>
+    <div class="meta">
+      <span class="chip hot">드론쇼 8/22 20:00</span>
+      <span class="chip hot">해변열차 8/23 18:30 예약</span>
+      <span class="chip">숙소 · 광안리 2박</span>
+      <span class="chip">이동 · 택시 기본</span>
+      <span class="chip">교통 · KTX 왕복</span>
+    </div>
+  </div>
+  <div class="horizon"></div>
+</header>
+
+<main class="wrap">
+
+  <section>
+    <h2>Fixed times</h2>
+    <p class="sub">이것만은 시간을 지켜야 해요</p>
+    <div class="board">
+      <div class="alarm"><time>8/22 11:00</time><div><strong>부산역 도착</strong><span>서울 → 부산 KTX. 도착 즉시 일정 시작</span></div></div>
+      <div class="alarm"><time>8/22 13:30</time><div><strong>태종대 다누비열차 탑승</strong><span>순환도로는 열차 운행 중 일반 차량 진입 불가 · 65세 이상 할인 3,000원 · 현장 구매만 가능(예약 불가)</span></div></div>
+      <div class="alarm"><time>8/22 20:00</time><div><strong>광안리 M 드론라이트쇼</strong><span>별도 예약 불요 · 해변 어디서나 관람 가능 · 인파 회피하려면 2층 카페 추천</span></div></div>
+      <div class="alarm"><time>8/23 09:00</time><div><strong>해동용궁사</strong><span>이른 시간 방문으로 더위·인파 회피</span></div></div>
+      <div class="alarm"><time>8/23 18:30</time><div><strong>블루라인파크 해변열차 (미포 출발)</strong><span>사전 예약 회차 · 8/23 일몰 19:03 기준 노을 시간대 · 잔여석 빨리 소진되니 서둘러 예약</span></div></div>
+      <div class="alarm"><time>8/24 09:30</time><div><strong>송도 해상케이블카</strong><span>송도베이스테이션 · 앉아서 바다 위 이동, 체력 부담 적음</span></div></div>
+      <div class="alarm"><time>8/24 15~16시</time><div><strong>부산 → 서울 KTX 귀경</strong><span>부산역 이동 여유 두고 출발</span></div></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Reservations</h2>
+    <p class="sub">눌러서 예약 체크리스트를 확인해요</p>
+    <ul class="checklist" id="checklist">
+      <li><button class="check" aria-pressed="false"><span class="box">✓</span><span class="label">KTX 왕복 (서울↔부산) — 8월 말 주말 좌석 조기 마감 가능</span></button></li>
+      <li><button class="check" aria-pressed="false"><span class="box">✓</span><span class="label">광안리 숙소 2박</span></button></li>
+      <li><button class="check" aria-pressed="false"><span class="box">✓</span><span class="label">태종대 다누비열차 — 현장 구매만 가능(예약 불가), 시간 여유 두고 방문</span></button></li>
+      <li><button class="check" aria-pressed="false"><span class="box">✓</span><span class="label">태종대 유람선 — 태종대 입구에서 예약</span></button></li>
+      <li><button class="check" aria-pressed="false"><span class="box">✓</span><span class="label">해운대 블루라인파크 해변열차 — 8/23 18:30대 회차(미포 출발) 사전 예약</span></button></li>
+      <li><button class="check" aria-pressed="false"><span class="box">✓</span><span class="label">광안리 M 드론라이트쇼 — 8/22(토), 별도 예약 불요</span></button></li>
+    </ul>
+    <p class="tally" id="tally">체크됨 <b>0</b> / 6</p>
+  </section>
+
+  <section>
+    <h2>Itinerary</h2>
+    <p class="sub">하루씩 따라가기</p>
+
+    <div class="day">
+      <div class="dayhead"><span class="d">DAY 1</span><h3>태종대 + 국립해양박물관, 광안리 드론쇼</h3><span class="dt">8월 22일 토</span></div>
+      <p class="daynote">11:00 부산역 도착. 초량에서 점심 후 택시로 태종대, 다누비열차로 순환 관람과 유람선. 한낮 더위는 국립해양박물관 실내에서 피하고, 광안리 체크인 후 저녁과 드론쇼로 마무리.</p>
+      <div class="mapbox" id="map1"></div>
+      <p class="maphint">지도의 번호나 아래 장소 이름을 누르면 위치가 표시됩니다</p>
+      <ul class="route" data-day="1">
+        <li class="stop star" data-i="0"><span class="t">11:00</span>
+          <h4><button class="pin">부산역 도착</button></h4>
+          <p>서울 → 부산 KTX. 도착하면 초량 인근에서 점심 먼저.</p>
+          <a class="ext" href="https://maps.google.com/?cid=187109013205459022" target="_blank" rel="noopener">지도 앱에서 열기 ↗</a></li>
+        <li class="stop" data-i="1"><span class="t">11:30</span>
+          <h4><button class="pin">초량 돼지국밥·밀면 거리</button></h4>
+          <p>역 인근에서 부모님 입맛에 맞는 돼지국밥이나 밀면으로 점심.</p>
+          <a class="ext" href="https://maps.google.com/?q=%EC%B4%88%EB%9F%89+%EB%8F%BC%EC%A7%80%EA%B5%AD%EB%B0%A5" target="_blank" rel="noopener">지도 앱에서 열기 ↗</a></li>
+        <li class="stop star" data-i="2"><span class="t">13:00</span>
+          <h4><button class="pin">태종대</button><span class="tag res">다누비열차</span></h4>
+          <p>택시로 30~40분 이동. 순환도로는 열차 운행 시간대에 일반 차량(택시 포함) 진입 불가하므로 입구까지만 택시, 내부는 다누비열차로 순환 관람. 65세 이상 할인 3,000원, 현장 구매만 가능.</p>
+          <a class="ext" href="https://maps.google.com/?q=%ED%83%9C%EC%A2%85%EB%8C%80" target="_blank" rel="noopener">지도 앱에서 열기 ↗</a></li>
+        <li class="stop" data-i="3"><span class="t">14:30</span>
+          <h4><button class="pin">태종대 유람선</button></h4>
+          <p>약 40분 탑승. 선착장은 다누비열차로 접근합니다.</p>
+          <a class="ext" href="https://maps.google.com/?q=%ED%83%9C%EC%A2%85%EB%8C%80+%EC%9C%A0%EB%9E%8C%EC%84%A0" target="_blank" rel="noopener">지도 앱에서 열기 ↗</a></li>
+        <li class="stop" data-i="4"><span class="t">15:30</span>
+          <h4><button class="pin">국립해양박물관</button></h4>
+          <p>택시로 5~10분(영도 동삼동). 실내·냉방이라 한낮 더위를 피하기 좋습니다. 17:00까지 관람.</p>
+          <a class="ext" href="https://maps.google.com/?q=%EA%B5%AD%EB%A6%BD%ED%95%B4%EC%96%91%EB%B0%95%EB%AC%BC%EA%B4%80" target="_blank" rel="noopener">지도 앱에서 열기 ↗</a></li>
+        <li class="stop l2" data-i="5"><span class="t">17:30</span>
+          <h4><button class="pin">숙소 체크인</button></h4>
+          <p>광안리 숙소. 2박 고정이라 이후 짐 이동이 없습니다.</p>
+          <a class="ext" href="https://maps.google.com/?q=%EA%B4%91%EC%95%88%EB%A6%AC%ED%95%B4%EC%88%98%EC%9A%95%EC%9E%A5" target="_blank" rel="noopener">지도 앱에서 열기 ↗</a></li>
+        <li class="stop l2" data-i="6"><span class="t">18:00</span>
+          <h4><button class="pin">광안리 저녁 식사</button></h4>
+          <p>회 또는 조개구이.</p>
+          <a class="ext" href="https://maps.google.com/?q=%EA%B4%91%EC%95%88%EB%A6%AC+%ED%9A%8C%EC%A7%91" target="_blank" rel="noopener">지도 앱에서 열기 ↗</a></li>
+        <li class="stop star l2" data-i="7"><span class="t">20:00</span>
+          <h4><button class="pin">광안리 M 드론라이트쇼</button><span class="tag ev">드론쇼</span></h4>
+          <p>해변 어디서나 관람 가능, 별도 예약 불요. 인파를 피하려면 2층 카페 등에서 관람 추천.</p>
+          <a class="ext" href="https://maps.google.com/?q=%EA%B4%91%EC%95%88%EB%A6%AC%ED%95%B4%EC%88%98%EC%9A%95%EC%9E%A5" target="_blank" rel="noopener">지도 앱에서 열기 ↗</a></li>
+      </ul>
+    </div>
+
+    <div class="day">
+      <div class="dayhead"><span class="d">DAY 2</span><h3>해동용궁사 + 해운대 + 노을 해변열차</h3><span class="dt">8월 23일 일</span></div>
+      <p class="daynote">이른 아침 해동용궁사로 더위·인파를 피하고, 한낮은 신세계 센텀시티 실내에서. 저녁엔 블루라인파크 해변열차로 미포에서 청사포까지 노을을 보며 이동, 청사포에서 저녁 식사.</p>
+      <div class="mapbox" id="map2"></div>
+      <p class="maphint">지도의 번호나 아래 장소 이름을 누르면 위치가 표시됩니다</p>
+      <ul class="route" data-day="2">
+        <li class="stop star" data-i="0"><span class="t">09:00</span>
+          <h4><button class="pin">해동용궁사</button></h4>
+          <p>이른 시간 방문으로 더위와 인파를 피합니다.</p>
+          <a class="ext" href="https://maps.google.com/?q=%ED%95%B4%EB%8F%99%EC%9A%A9%EA%B6%81%EC%82%AC" target="_blank" rel="noopener">지도 앱에서 열기 ↗</a></li>
+        <li class="stop" data-i="1"><span class="t">11:00</span>
+          <h4><button class="pin">해운대 이동, 점심</button></h4>
+          <p>해운대로 이동해 점심 식사.</p>
+          <a class="ext" href="https://maps.google.com/?q=%ED%95%B4%EC%9A%B4%EB%8C%80" target="_blank" rel="noopener">지도 앱에서 열기 ↗</a></li>
+        <li class="stop" data-i="2"><span class="t">12:00</span>
+          <h4><button class="pin">신세계 센텀시티</button></h4>
+          <p>실내에서 한낮 더위를 피합니다. 15:00까지.</p>
+          <a class="ext" href="https://maps.google.com/?q=%EC%8B%A0%EC%84%B8%EA%B3%84+%EC%84%BC%ED%85%80%EC%8B%9C%ED%8B%B0" target="_blank" rel="noopener">지도 앱에서 열기 ↗</a></li>
+        <li class="stop" data-i="3"><span class="t">15:30</span>
+          <h4><button class="pin">더베이101 · 해운대 해변 산책</button></h4>
+          <p>선택 일정. 체력 상황에 따라 조정.</p>
+          <a class="ext" href="https://maps.google.com/?q=%EB%8D%94%EB%B2%A0%EC%9D%B4101" target="_blank" rel="noopener">지도 앱에서 열기 ↗</a></li>
+        <li class="stop star l2" data-i="4"><span class="t">18:30</span>
+          <h4><button class="pin">블루라인파크 미포정거장</button><span class="tag res">해변열차 예약</span></h4>
+          <p>사전 예약한 노을 시간대 회차로 해변열차 탑승. 미포↔청사포 구간(2.3km, 편도 10~12분) 왕복 이용, 송정까지는 가지 않습니다. 취소 규정: 탑승 3일 전까지 전액 환불, 이후 단계적 수수료.</p>
+          <a class="ext" href="https://maps.google.com/?q=%EB%AF%B8%ED%8F%AC%EC%A0%95%EA%B1%B0%EC%9E%A5" target="_blank" rel="noopener">지도 앱에서 열기 ↗</a></li>
+        <li class="stop l2" data-i="5"><span class="t">19:00</span>
+          <h4><button class="pin">청사포 노을 감상</button></h4>
+          <p>8/23 일몰 19:03(부산 기준) 무렵 도착.</p>
+          <a class="ext" href="https://maps.google.com/?q=%EC%B2%AD%EC%82%AC%ED%8F%AC" target="_blank" rel="noopener">지도 앱에서 열기 ↗</a></li>
+        <li class="stop l2" data-i="6"><span class="t">19:30</span>
+          <h4><button class="pin">청사포 저녁 식사</button></h4>
+          <p>활어회 또는 조개구이.</p>
+          <a class="ext" href="https://maps.google.com/?q=%EC%B2%AD%EC%82%AC%ED%8F%AC+%ED%9A%8C" target="_blank" rel="noopener">지도 앱에서 열기 ↗</a></li>
+        <li class="stop l2" data-i="7"><span class="t">21:00</span>
+          <h4><button class="pin">해변열차로 미포 복귀</button></h4>
+          <p>미포 복귀 후 숙소로 이동.</p>
+          <a class="ext" href="https://maps.google.com/?q=%EB%AF%B8%ED%8F%AC%EC%A0%95%EA%B1%B0%EC%9E%A5" target="_blank" rel="noopener">지도 앱에서 열기 ↗</a></li>
+      </ul>
+    </div>
+
+    <div class="day">
+      <div class="dayhead"><span class="d">DAY 3</span><h3>송도 케이블카 + 자갈치 + 귀경</h3><span class="dt">8월 24일 월</span></div>
+      <p class="daynote">체크아웃 후 짐 보관 요청. 앉아서 바다 위를 건너는 송도 해상케이블카로 시작해, 월요일에도 정상 영업하는 자갈치시장에서 점심, 시간이 남으면 국제시장까지. 오후엔 부산역으로 이동해 귀경.</p>
+      <div class="mapbox" id="map3"></div>
+      <p class="maphint">지도의 번호나 아래 장소 이름을 누르면 위치가 표시됩니다</p>
+      <ul class="route" data-day="3">
+        <li class="stop" data-i="0"><span class="t">체크아웃</span>
+          <h4><button class="pin">숙소 짐 보관 요청</button></h4>
+          <p>체크아웃 후 짐을 맡기고 가볍게 이동.</p>
+          <a class="ext" href="https://maps.google.com/?q=%EA%B4%91%EC%95%88%EB%A6%AC%ED%95%B4%EC%88%98%EC%9A%95%EC%9E%A5" target="_blank" rel="noopener">지도 앱에서 열기 ↗</a></li>
+        <li class="stop star" data-i="1"><span class="t">09:30</span>
+          <h4><button class="pin">송도 해상케이블카</button></h4>
+          <p>송도베이스테이션에서 탑승. 앉아서 바다 위를 이동해 체력 부담이 적습니다.</p>
+          <a class="ext" href="https://maps.google.com/?q=%EC%86%A1%EB%8F%84%EB%B2%A0%EC%9D%B4%EC%8A%A4%ED%85%8C%EC%9D%B4%EC%85%98" target="_blank" rel="noopener">지도 앱에서 열기 ↗</a></li>
+        <li class="stop" data-i="2"><span class="t">11:30</span>
+          <h4><button class="pin">자갈치시장</button></h4>
+          <p>월요일에도 정상 영업합니다.</p>
+          <a class="ext" href="https://maps.google.com/?q=%EC%9E%90%EA%B0%88%EC%B9%98%EC%8B%9C%EC%9E%A5" target="_blank" rel="noopener">지도 앱에서 열기 ↗</a></li>
+        <li class="stop" data-i="3"><span class="t">12:00</span>
+          <h4><button class="pin">자갈치 2층 식당가 점심</button></h4>
+          <p>1층에서 구입 후 2층 식당가에서 조리해 점심 식사.</p>
+          <a class="ext" href="https://maps.google.com/?q=%EC%9E%90%EA%B0%88%EC%B9%98%EC%8B%9C%EC%9E%A5" target="_blank" rel="noopener">지도 앱에서 열기 ↗</a></li>
+        <li class="stop" data-i="4"><span class="t">13:30</span>
+          <h4><button class="pin">국제시장 · 부평깡통시장</button></h4>
+          <p>아케이드형이라 그늘이 있습니다. 시간 여유가 있을 때만.</p>
+          <a class="ext" href="https://maps.google.com/?q=%EA%B5%AD%EC%A0%9C%EC%8B%9C%EC%9E%A5+%EB%B6%80%EC%82%B0" target="_blank" rel="noopener">지도 앱에서 열기 ↗</a></li>
+        <li class="stop star l1" data-i="5"><span class="t">14:00</span>
+          <h4><button class="pin">부산역 이동</button><span class="tag ev">KTX 15~16시</span></h4>
+          <p>부산역으로 이동해 KTX로 서울 귀경.</p>
+          <a class="ext" href="https://maps.google.com/?cid=187109013205459022" target="_blank" rel="noopener">지도 앱에서 열기 ↗</a></li>
+      </ul>
+    </div>
+  </section>
+
+  <div class="tips">
+    <h3>설계 원칙</h3>
+    <ul>
+      <li>오전 야외 → 한낮(12~16시) 실내 → 저녁 야외·야경 순서로 구성했습니다.</li>
+      <li>계단·경사 구간은 최소화했습니다. 흰여울문화마을, 감천문화마을, 태종대 도보 관람 등은 제외했습니다.</li>
+      <li>"구경은 많이, 걷는 거리는 짧게" — 밀집형 관광지 위주로 짰습니다.</li>
+      <li>8월 말은 광안리·송정 등 주요 해수욕장 폐장 시점(8/31)과 겹쳐 인파가 많을 수 있습니다.</li>
+      <li>8월 말 부산 낮 기온은 30~32도, 태풍 영향권 시기이니 예약 취소 규정을 꼭 확인하세요.</li>
+    </ul>
+  </div>
+
+  <div class="tips">
+    <h3>메모</h3>
+    <ul>
+      <li>태종대 순환도로는 다누비열차 운행 시간대에 일반 차량(택시 포함) 진입이 불가합니다. 입구까지만 택시로 가고, 내부는 다누비열차를 이용하세요.</li>
+      <li>다누비열차는 65세 이상 3,000원 할인, 현장 구매만 가능(예약 불가)합니다.</li>
+      <li>해변열차는 회차별 시간 예약제입니다. bluelinepark.com 등에서 사전 예약 필수이며, 노을 시간대는 잔여석이 빨리 소진됩니다.</li>
+      <li>8/24(월)은 부산근대역사관·부산시립미술관 등 대부분 박물관이 휴관일이라 3일차 일정에서 제외했습니다.</li>
+      <li>국립해양박물관은 1일차에 이미 포함되어 있어 중복이 없습니다.</li>
+    </ul>
+  </div>
+
+  <div class="tips">
+    <h3>준비물</h3>
+    <ul>
+      <li>양산·챙모자, 손선풍기, 미끄럼 적은 편한 신발</li>
+      <li>실내 냉방 대비 얇은 긴팔</li>
+      <li>부모님 상비약</li>
+    </ul>
+  </div>
+
+  <footer>BUSAN · 2026.08.22 – 08.24 · 시간은 변경될 수 있으니 현장 안내를 확인하세요</footer>
+</main>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+(function(){
+  /* ---- 예약 체크리스트 ---- */
+  var box = document.getElementById('checklist');
+  var tally = document.getElementById('tally').querySelector('b');
+  var checkBtns = box.querySelectorAll('.check');
+  var CHECK_KEY = 'busan-family-reservations';
+
+  function saveChecks(){
+    var state = [];
+    checkBtns.forEach(function(b){ state.push(b.getAttribute('aria-pressed') === 'true'); });
+    try{ localStorage.setItem(CHECK_KEY, JSON.stringify(state)); }catch(e){}
+  }
+  function loadChecks(){
+    try{
+      var saved = JSON.parse(localStorage.getItem(CHECK_KEY) || '[]');
+      checkBtns.forEach(function(b,i){ if(saved[i]) b.setAttribute('aria-pressed','true'); });
+    }catch(e){}
+  }
+  loadChecks();
+  tally.textContent = box.querySelectorAll('[aria-pressed="true"]').length;
+
+  box.addEventListener('click', function(e){
+    var btn = e.target.closest('.check');
+    if(!btn) return;
+    btn.setAttribute('aria-pressed', btn.getAttribute('aria-pressed') === 'true' ? 'false':'true');
+    tally.textContent = box.querySelectorAll('[aria-pressed="true"]').length;
+    saveChecks();
+  });
+
+  /* ---- 지도 데이터 ---- */
+  var DATA = {
+    1: {color:'#FF6A52', stops:[
+      ['부산역','11:00',35.115225,129.042243],
+      ['초량 돼지국밥·밀면 거리','11:30',35.1155,129.0410],
+      ['태종대','13:00',35.0507,129.0873],
+      ['태종대 유람선','14:30',35.0498,129.0868],
+      ['국립해양박물관','15:30',35.0644,129.0910],
+      ['숙소(광안리)','17:30',35.1531696,129.118666],
+      ['광안리 저녁 식사','18:00',35.1531696,129.118666],
+      ['광안리 M 드론라이트쇼','20:00',35.1531696,129.118666]
+    ]},
+    2: {color:'#12A5B8', stops:[
+      ['해동용궁사','09:00',35.1885,129.2231],
+      ['해운대','11:00',35.1587,129.1604],
+      ['신세계 센텀시티','12:00',35.1691,129.1310],
+      ['더베이101','15:30',35.1567,129.1467],
+      ['블루라인파크 미포정거장','18:30',35.1633,129.1690],
+      ['청사포','19:00',35.1730,129.1930],
+      ['청사포 저녁 식사','19:30',35.1730,129.1930]
+    ]},
+    3: {color:'#E0A100', stops:[
+      ['숙소(광안리)','체크아웃',35.1531696,129.118666],
+      ['송도 해상케이블카(송도베이스테이션)','09:30',35.0765,129.0175],
+      ['자갈치시장','11:30',35.0968,129.0305],
+      ['국제시장·부평깡통시장','13:30',35.1006,129.0289],
+      ['부산역','14:00',35.115225,129.042243]
+    ]}
+  };
+
+  var maps = {}, markers = {};
+
+  function build(day){
+    var cfg = DATA[day];
+    var map = L.map('map'+day, {scrollWheelZoom:false});
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',{
+      attribution:'&copy; OpenStreetMap &copy; CARTO', maxZoom:19
+    }).addTo(map);
+
+    var pts = cfg.stops.map(function(s){ return [s[2],s[3]]; });
+    L.polyline(pts,{color:cfg.color,weight:3,opacity:.55,dashArray:'6 7'}).addTo(map);
+
+    markers[day] = cfg.stops.map(function(s,i){
+      var icon = L.divIcon({
+        className:'', iconSize:[28,28], iconAnchor:[14,14],
+        html:'<div class="pinmark" style="width:28px;height:28px;background:'+cfg.color+'">'+(i+1)+'</div>'
+      });
+      var m = L.marker([s[2],s[3]],{icon:icon,title:s[0]}).addTo(map);
+      m.bindPopup('<b>'+s[0]+'</b><br><span style="font-family:monospace;color:#5E7386">'+s[1]+'</span>');
+      m.on('click', function(){ highlight(day,i,false); });
+      return m;
+    });
+
+    map.fitBounds(L.latLngBounds(pts).pad(0.18));
+    maps[day] = map;
+  }
+
+  function highlight(day,i,pan){
+    document.querySelectorAll('.stop.active').forEach(function(el){ el.classList.remove('active'); });
+    var li = document.querySelector('.route[data-day="'+day+'"] .stop[data-i="'+i+'"]');
+    if(li) li.classList.add('active');
+    var m = markers[day][i];
+    if(pan){
+      maps[day].setView(m.getLatLng(), 15, {animate:true});
+      document.getElementById('map'+day).scrollIntoView({behavior:'smooth', block:'center'});
+    }
+    m.openPopup();
+  }
+
+  [1,2,3].forEach(build);
+
+  document.querySelectorAll('.route').forEach(function(ul){
+    var day = ul.getAttribute('data-day');
+    ul.addEventListener('click', function(e){
+      var btn = e.target.closest('.pin');
+      if(!btn) return;
+      highlight(day, parseInt(btn.closest('.stop').getAttribute('data-i'),10), true);
+    });
+  });
+})();
+</script>
+</body>
+</html>
