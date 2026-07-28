@@ -94,6 +94,12 @@ h2 + .sub{margin:0 0 26px;font-size:22px;font-weight:700;letter-spacing:-.02em}
 .tips li{margin-bottom:9px;font-size:14.5px}
 .tips li::marker{color:var(--sun)}
 .tips + .tips{margin-top:20px}
+.expense-row{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid rgba(234,244,251,.14);font-size:14.5px}
+.expense-row:last-of-type{border-bottom:none}
+.expense-row .amt{font-family:var(--mono);color:#fff;white-space:nowrap}
+.expense-total{display:flex;justify-content:space-between;margin-top:12px;padding-top:14px;border-top:2px solid rgba(234,244,251,.35);font-size:16px;font-weight:700}
+.expense-total .amt{font-family:var(--mono);color:var(--sun)}
+.expense-note{margin:14px 0 0;font-size:13px;color:#A9C6DA}
 footer{margin-top:34px;font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.06em}
 
 @media (max-width:520px){
@@ -128,13 +134,13 @@ footer{margin-top:34px;font-family:var(--mono);font-size:11px;color:var(--muted)
     <h2>Fixed times</h2>
     <p class="sub">이것만은 시간을 지켜야 해요</p>
     <div class="board">
-      <div class="alarm"><time>8/22 11:00</time><div><strong>부산역 도착</strong><span>서울 → 부산 KTX. 도착 즉시 일정 시작</span></div></div>
+      <div class="alarm"><time>8/22 10:26</time><div><strong>부산역 도착</strong><span>서울역 07:50 출발 KTX (170,400원). 도착 즉시 일정 시작</span></div></div>
       <div class="alarm"><time>8/22 13:30</time><div><strong>태종대 다누비열차 탑승</strong><span>순환도로는 열차 운행 중 일반 차량 진입 불가 · 65세 이상 할인 3,000원 · 현장 구매만 가능(예약 불가)</span></div></div>
       <div class="alarm"><time>8/22 20:00</time><div><strong>광안리 M 드론라이트쇼</strong><span>별도 예약 불요 · 해변 어디서나 관람 가능 · 인파 회피하려면 2층 카페 추천</span></div></div>
       <div class="alarm"><time>8/23 09:00</time><div><strong>해동용궁사</strong><span>이른 시간 방문으로 더위·인파 회피</span></div></div>
       <div class="alarm"><time>8/23 18:30</time><div><strong>블루라인파크 해변열차 (미포 출발)</strong><span>사전 예약 회차 · 8/23 일몰 19:03 기준 노을 시간대 · 잔여석 빨리 소진되니 서둘러 예약</span></div></div>
       <div class="alarm"><time>8/24 09:30</time><div><strong>송도 해상케이블카</strong><span>송도베이스테이션 · 앉아서 바다 위 이동, 체력 부담 적음</span></div></div>
-      <div class="alarm"><time>8/24 15~16시</time><div><strong>부산 → 서울 KTX 귀경</strong><span>부산역 이동 여유 두고 출발</span></div></div>
+      <div class="alarm"><time>8/24 14:54</time><div><strong>부산 → 서울 KTX 귀경</strong><span>부산역 14:54 출발, 서울역 17:28 도착(133,400원). 이동 여유 두고 출발</span></div></div>
     </div>
   </section>
 
@@ -162,9 +168,9 @@ footer{margin-top:34px;font-family:var(--mono);font-size:11px;color:var(--muted)
       <div class="mapbox" id="map1"></div>
       <p class="maphint">지도의 번호나 아래 장소 이름을 누르면 위치가 표시됩니다</p>
       <ul class="route" data-day="1">
-        <li class="stop star" data-i="0"><span class="t">11:00</span>
+        <li class="stop star" data-i="0"><span class="t">10:26</span>
           <h4><button class="pin">부산역 도착</button></h4>
-          <p>서울 → 부산 KTX. 도착하면 초량 인근에서 점심 먼저.</p>
+          <p>서울역 07:50 출발 KTX(170,400원), 10:26 부산역 도착. 도착하면 초량 인근에서 점심 먼저.</p>
           <a class="ext" href="https://maps.google.com/?cid=187109013205459022" target="_blank" rel="noopener">지도 앱에서 열기 ↗</a></li>
         <li class="stop" data-i="1"><span class="t">11:30</span>
           <h4><button class="pin">초량 돼지국밥·밀면 거리</button></h4>
@@ -265,8 +271,8 @@ footer{margin-top:34px;font-family:var(--mono);font-size:11px;color:var(--muted)
           <p>아케이드형이라 그늘이 있습니다. 시간 여유가 있을 때만.</p>
           <a class="ext" href="https://maps.google.com/?q=%EA%B5%AD%EC%A0%9C%EC%8B%9C%EC%9E%A5+%EB%B6%80%EC%82%B0" target="_blank" rel="noopener">지도 앱에서 열기 ↗</a></li>
         <li class="stop star l1" data-i="5"><span class="t">14:00</span>
-          <h4><button class="pin">부산역 이동</button><span class="tag ev">KTX 15~16시</span></h4>
-          <p>부산역으로 이동해 KTX로 서울 귀경.</p>
+          <h4><button class="pin">부산역 이동</button><span class="tag ev">KTX 14:54</span></h4>
+          <p>부산역 14:54 출발 KTX(133,400원)로 서울역 17:28 도착. 여유 있게 이동.</p>
           <a class="ext" href="https://maps.google.com/?cid=187109013205459022" target="_blank" rel="noopener">지도 앱에서 열기 ↗</a></li>
       </ul>
     </div>
@@ -301,6 +307,14 @@ footer{margin-top:34px;font-family:var(--mono);font-size:11px;color:var(--muted)
       <li>실내 냉방 대비 얇은 긴팔</li>
       <li>부모님 상비약</li>
     </ul>
+  </div>
+
+  <div class="tips">
+    <h3>사용 금액</h3>
+    <div class="expense-row"><span>KTX 서울 → 부산 (07:50 → 10:26)</span><span class="amt">170,400원</span></div>
+    <div class="expense-row"><span>KTX 부산 → 서울 (14:54 → 17:28)</span><span class="amt">133,400원</span></div>
+    <div class="expense-total"><span>합계</span><span class="amt">303,800원</span></div>
+    <p class="expense-note">숙소·해변열차 등 예약이 확정되는 대로 이 목록에 추가할 예정입니다.</p>
   </div>
 
   <footer>BUSAN · 2026.08.22 – 08.24 · 시간은 변경될 수 있으니 현장 안내를 확인하세요</footer>
@@ -340,7 +354,7 @@ footer{margin-top:34px;font-family:var(--mono);font-size:11px;color:var(--muted)
   /* ---- 지도 데이터 ---- */
   var DATA = {
     1: {color:'#FF6A52', stops:[
-      ['부산역','11:00',35.115225,129.042243],
+      ['부산역','10:26',35.115225,129.042243],
       ['초량 돼지국밥·밀면 거리','11:30',35.1155,129.0410],
       ['태종대','13:00',35.0507,129.0873],
       ['태종대 유람선','14:30',35.0498,129.0868],
